@@ -1,0 +1,12 @@
+name: sysmlParser
+channels:
+  - robostack-humble
+  - defaults
+dependencies:
+  - python=3.13
+  - antlr4-python3-runtime
+  - pip
+  - pip:
+      - rich
+      - paho-mqtt
+      - pygments
