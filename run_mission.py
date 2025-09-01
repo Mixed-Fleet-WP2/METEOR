@@ -28,8 +28,8 @@ def main():
         sys.exit(1)
 
     actions = parse_model(model_file)
-    print("Parsed actions:")
-    print(actions)
+    print("Parsed actions")
+
 
     save_actions_history(actions)
     run_orchestration(actions)

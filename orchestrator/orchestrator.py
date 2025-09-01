@@ -97,7 +97,7 @@ def run_orchestration(data):
         rprint(f":bell: [bold cyan]Subscribed to[/bold cyan] [italic]{actor}/{action_name}/feedback[/italic]")
 
     def on_message(client, userdata, msg):
-        global current_index
+        nonlocal current_index  
         action_name = flow_order[current_index]
         actor = action_to_actor.get(action_name, "unknown")
         expected_out_params = [

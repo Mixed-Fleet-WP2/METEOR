@@ -1,4 +1,4 @@
-// Generated from /Users/xhn957/Desktop/sysml_v2/model2sim/grammar/Part.g4 by ANTLR 4.13.1
+// Generated from /Users/xhn957/Desktop/projects/model2sim/grammar/Part.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
