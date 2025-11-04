@@ -66,7 +66,7 @@ Parsed actions will be saved in the `history/` folder.
 
 ## 📜 License
 
-MIT License (or specify your license here).
+
 
 ---
 
