@@ -4,7 +4,71 @@ from rich import print as rprint
 
 def run_orchestration(data):
     mission = data[0]
-    flow_order = [step['name'] for step in mission['flow']]
+    outputs = {}  # Store outputs from all previous actions (moved here for condition evaluation)
+    
+    def evaluate_condition(condition_str, mission, outputs):
+        """Evaluate a condition string using mission attributes and outputs"""
+        # Replace attribute references with their actual values
+        # Parse condition like: "defaultLocation.X == 50.0 and defaultLocation.Y == 50.0"
+        
+        # Get mission attributes as a dict for easier access
+        env = {}
+        for attr in mission.get('attributes', []):
+            if 'fields' in attr:
+                # Nested attribute like defaultLocation.X
+                for field_name, field_value in attr['fields'].items():
+                    env[f"{attr['name']}.{field_name}"] = field_value
+            elif 'value' in attr:
+                env[attr['name']] = attr['value']
+        
+        # Add outputs to environment
+        env.update(outputs)
+        
+        # Replace references in condition string
+        eval_str = condition_str
+        for key, value in env.items():
+            # Replace key with its value in the condition
+            if isinstance(value, str):
+                eval_str = eval_str.replace(key, f"'{value}'")
+            else:
+                eval_str = eval_str.replace(key, str(value))
+        
+        # Replace logical operators to Python syntax
+        eval_str = eval_str.replace(' and ', ' and ')
+        eval_str = eval_str.replace(' or ', ' or ')
+        eval_str = eval_str.replace(' not ', ' not ')
+        
+        try:
+            result = eval(eval_str)
+            rprint(f":mag: [bold cyan]Condition evaluation:[/bold cyan] {condition_str}")
+            rprint(f"   [dim]→ {eval_str} = {result}[/dim]")
+            return result
+        except Exception as e:
+            rprint(f":warning: [bold yellow]Failed to evaluate condition '{condition_str}': {e}[/bold yellow]")
+            return True  # Default to True on error
+    
+    # Flatten flow to handle if/else branches
+    def flatten_flow(flow_steps):
+        flat = []
+        for step in flow_steps:
+            if isinstance(step, dict) and 'name' in step:
+                flat.append(step['name'])
+            elif isinstance(step, dict) and step.get('type') == 'if':
+                # Evaluate condition and choose branch
+                condition = step.get('condition', '')
+                result = evaluate_condition(condition, mission, outputs)
+                
+                if result:
+                    rprint(f":white_check_mark: [bold green]Condition TRUE, taking if-branch[/bold green]")
+                    if step.get('if_branch'):
+                        flat.extend(flatten_flow(step['if_branch']))
+                else:
+                    rprint(f":x: [bold red]Condition FALSE, taking else-branch[/bold red]")
+                    if step.get('else_branch'):
+                        flat.extend(flatten_flow(step['else_branch']))
+        return flat
+    
+    flow_order = flatten_flow(mission['flow'])
     actions = {a['name']: a for a in mission['nested_actions']}
     parts = mission['parts']
 
@@ -23,7 +87,6 @@ def run_orchestration(data):
     port = 2883
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
     current_index = 0
-    outputs = {}  # Store outputs from all previous actions
 
     def resolve_input(param, action, mission):
         default = param.get('default', {})

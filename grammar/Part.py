@@ -10,19 +10,19 @@ else:
 
 def serializedATN():
     return [
-        4,1,22,43,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,1,0,1,0,1,0,1,0,1,0,1,
+        4,1,40,43,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,1,0,1,0,1,0,1,0,1,0,1,
         0,5,0,15,8,0,10,0,12,0,18,9,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,3,
         1,28,8,1,1,1,1,1,1,1,1,1,1,1,3,1,35,8,1,1,2,1,2,1,3,1,3,1,3,1,3,
-        1,3,0,0,4,0,2,4,6,0,1,1,0,19,21,41,0,8,1,0,0,0,2,34,1,0,0,0,4,36,
-        1,0,0,0,6,38,1,0,0,0,8,9,5,2,0,0,9,10,5,19,0,0,10,11,5,11,0,0,11,
-        12,5,19,0,0,12,16,5,15,0,0,13,15,3,2,1,0,14,13,1,0,0,0,15,18,1,0,
+        1,3,0,0,4,0,2,4,6,0,1,1,0,37,39,41,0,8,1,0,0,0,2,34,1,0,0,0,4,36,
+        1,0,0,0,6,38,1,0,0,0,8,9,5,5,0,0,9,10,5,37,0,0,10,11,5,26,0,0,11,
+        12,5,37,0,0,12,16,5,31,0,0,13,15,3,2,1,0,14,13,1,0,0,0,15,18,1,0,
         0,0,16,14,1,0,0,0,16,17,1,0,0,0,17,19,1,0,0,0,18,16,1,0,0,0,19,20,
-        5,16,0,0,20,1,1,0,0,0,21,22,5,6,0,0,22,23,5,7,0,0,23,24,5,19,0,0,
-        24,25,5,13,0,0,25,27,3,4,2,0,26,28,3,6,3,0,27,26,1,0,0,0,27,28,1,
-        0,0,0,28,29,1,0,0,0,29,30,5,12,0,0,30,35,1,0,0,0,31,32,5,5,0,0,32,
-        33,5,19,0,0,33,35,5,12,0,0,34,21,1,0,0,0,34,31,1,0,0,0,35,3,1,0,
-        0,0,36,37,7,0,0,0,37,5,1,0,0,0,38,39,5,17,0,0,39,40,5,19,0,0,40,
-        41,5,18,0,0,41,7,1,0,0,0,3,16,27,34
+        5,32,0,0,20,1,1,0,0,0,21,22,5,9,0,0,22,23,5,10,0,0,23,24,5,37,0,
+        0,24,25,5,28,0,0,25,27,3,4,2,0,26,28,3,6,3,0,27,26,1,0,0,0,27,28,
+        1,0,0,0,28,29,1,0,0,0,29,30,5,27,0,0,30,35,1,0,0,0,31,32,5,8,0,0,
+        32,33,5,37,0,0,33,35,5,27,0,0,34,21,1,0,0,0,34,31,1,0,0,0,35,3,1,
+        0,0,0,36,37,7,0,0,0,37,5,1,0,0,0,38,39,5,33,0,0,39,40,5,37,0,0,40,
+        41,5,34,0,0,41,7,1,0,0,0,3,16,27,34
     ]
 
 class Part ( Parser ):
@@ -35,15 +35,22 @@ class Part ( Parser ):
 
     sharedContextCache = PredictionContextCache()
 
-    literalNames = [ "<INVALID>", "'action'", "'part'", "'in'", "'out'", 
-                     "'perform'", "'attribute'", "':>>'", "'first'", "'then'", 
-                     "'done'", "':'", "';'", "'='", "'.'", "'{'", "'}'", 
-                     "'['", "']'" ]
+    literalNames = [ "<INVALID>", "'package'", "'import'", "'private'", 
+                     "'action'", "'part'", "'in'", "'out'", "'perform'", 
+                     "'attribute'", "':>>'", "'first'", "'then'", "'done'", 
+                     "'if'", "'else'", "'and'", "'or'", "'not'", "'=='", 
+                     "'!='", "'>='", "'<='", "'>'", "'<'", "'::'", "':'", 
+                     "';'", "'='", "'.'", "'*'", "'{'", "'}'", "'['", "']'", 
+                     "'('", "')'" ]
 
-    symbolicNames = [ "<INVALID>", "ACTION", "PART", "IN", "OUT", "PERFORM", 
-                      "ATTRIBUTE", "REDEFINES", "FIRST", "THEN", "DONE", 
-                      "COLON", "SEMI", "EQUAL", "DOT", "LBRACE", "RBRACE", 
-                      "LBRACK", "RBRACK", "ID", "STRING", "NUMBER", "WS" ]
+    symbolicNames = [ "<INVALID>", "PACKAGE", "IMPORT", "PRIVATE", "ACTION", 
+                      "PART", "IN", "OUT", "PERFORM", "ATTRIBUTE", "REDEFINES", 
+                      "FIRST", "THEN", "DONE", "IF", "ELSE", "AND", "OR", 
+                      "NOT", "EQUAL_EQ", "NOT_EQ", "GREATER_EQ", "LESS_EQ", 
+                      "GREATER", "LESS", "COLONCOLON", "COLON", "SEMI", 
+                      "EQUAL", "DOT", "STAR", "LBRACE", "RBRACE", "LBRACK", 
+                      "RBRACK", "LPAREN", "RPAREN", "ID", "STRING", "NUMBER", 
+                      "WS" ]
 
     RULE_part = 0
     RULE_partBody = 1
@@ -53,28 +60,46 @@ class Part ( Parser ):
     ruleNames =  [ "part", "partBody", "expr", "unit" ]
 
     EOF = Token.EOF
-    ACTION=1
-    PART=2
-    IN=3
-    OUT=4
-    PERFORM=5
-    ATTRIBUTE=6
-    REDEFINES=7
-    FIRST=8
-    THEN=9
-    DONE=10
-    COLON=11
-    SEMI=12
-    EQUAL=13
-    DOT=14
-    LBRACE=15
-    RBRACE=16
-    LBRACK=17
-    RBRACK=18
-    ID=19
-    STRING=20
-    NUMBER=21
-    WS=22
+    PACKAGE=1
+    IMPORT=2
+    PRIVATE=3
+    ACTION=4
+    PART=5
+    IN=6
+    OUT=7
+    PERFORM=8
+    ATTRIBUTE=9
+    REDEFINES=10
+    FIRST=11
+    THEN=12
+    DONE=13
+    IF=14
+    ELSE=15
+    AND=16
+    OR=17
+    NOT=18
+    EQUAL_EQ=19
+    NOT_EQ=20
+    GREATER_EQ=21
+    LESS_EQ=22
+    GREATER=23
+    LESS=24
+    COLONCOLON=25
+    COLON=26
+    SEMI=27
+    EQUAL=28
+    DOT=29
+    STAR=30
+    LBRACE=31
+    RBRACE=32
+    LBRACK=33
+    RBRACK=34
+    LPAREN=35
+    RPAREN=36
+    ID=37
+    STRING=38
+    NUMBER=39
+    WS=40
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
@@ -157,7 +182,7 @@ class Part ( Parser ):
             self.state = 16
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==5 or _la==6:
+            while _la==8 or _la==9:
                 self.state = 13
                 self.partBody()
                 self.state = 18
@@ -237,7 +262,7 @@ class Part ( Parser ):
             self.state = 34
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [6]:
+            if token in [9]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 21
                 self.match(Part.ATTRIBUTE)
@@ -252,7 +277,7 @@ class Part ( Parser ):
                 self.state = 27
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if _la==17:
+                if _la==33:
                     self.state = 26
                     self.unit()
 
@@ -260,7 +285,7 @@ class Part ( Parser ):
                 self.state = 29
                 self.match(Part.SEMI)
                 pass
-            elif token in [5]:
+            elif token in [8]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 31
                 self.match(Part.PERFORM)
@@ -326,7 +351,7 @@ class Part ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 36
             _la = self._input.LA(1)
-            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 3670016) != 0)):
+            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 962072674304) != 0)):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)

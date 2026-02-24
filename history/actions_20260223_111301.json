@@ -1,0 +1,233 @@
+{
+  "package": "MixedFleet",
+  "imports": [
+    {
+      "private": true,
+      "qualified_name": "ScalarValues",
+      "wildcard": true
+    },
+    {
+      "private": true,
+      "qualified_name": "StructuralElements",
+      "wildcard": true
+    },
+    {
+      "private": true,
+      "qualified_name": "RequirementsSpace",
+      "wildcard": true
+    },
+    {
+      "private": true,
+      "qualified_name": "ActionsSpace",
+      "wildcard": true
+    },
+    {
+      "private": true,
+      "qualified_name": "Verefication",
+      "wildcard": true
+    },
+    {
+      "private": true,
+      "qualified_name": "VerificationCases",
+      "wildcard": true
+    },
+    {
+      "private": true,
+      "qualified_name": "SI",
+      "wildcard": true
+    }
+  ],
+  "actions": [
+    {
+      "name": "Mission",
+      "type": null,
+      "attributes": [
+        {
+          "name": "defaultLocation",
+          "type": "Coordinate",
+          "fields": {
+            "X": 50.0,
+            "Y": 50.0,
+            "Z": 50.0
+          }
+        }
+      ],
+      "params": [],
+      "parts": [
+        {
+          "name": "forklift_1",
+          "type": "Forklift",
+          "attributes": [
+            {
+              "name": "id",
+              "value": "\"FORK-001\""
+            },
+            {
+              "name": "autonomyLevel",
+              "value": "1"
+            },
+            {
+              "name": "liftingCapacity",
+              "value": "5000.0"
+            },
+            {
+              "name": "forkHeight",
+              "value": "6.0"
+            }
+          ],
+          "performs": [
+            "pick_up",
+            "move",
+            "drop"
+          ]
+        },
+        {
+          "name": "drone_1",
+          "type": "Uav",
+          "attributes": [
+            {
+              "name": "id",
+              "value": "\"DRONE-001\""
+            },
+            {
+              "name": "autonomyLevel",
+              "value": "2.0"
+            },
+            {
+              "name": "scanRange",
+              "value": "1000.0"
+            }
+          ],
+          "performs": [
+            "search"
+          ]
+        }
+      ],
+      "nested_actions": [
+        {
+          "name": "search",
+          "type": null,
+          "attributes": null,
+          "params": [
+            {
+              "direction": "out",
+              "name": "empty_location",
+              "default": null,
+              "redefines": false
+            },
+            {
+              "direction": "out",
+              "name": "status",
+              "default": null,
+              "redefines": false
+            }
+          ],
+          "parts": null,
+          "nested_actions": null,
+          "flow": null
+        },
+        {
+          "name": "pick_up",
+          "type": null,
+          "attributes": null,
+          "params": [
+            {
+              "direction": "in",
+              "name": "object",
+              "default": {
+                "type": "string",
+                "value": "euro_pallet_1"
+              },
+              "redefines": false
+            },
+            {
+              "direction": "out",
+              "name": "status",
+              "default": null,
+              "redefines": false
+            }
+          ],
+          "parts": null,
+          "nested_actions": null,
+          "flow": null
+        },
+        {
+          "name": "move",
+          "type": null,
+          "attributes": null,
+          "params": [
+            {
+              "direction": "in",
+              "name": "destination",
+              "default": {
+                "type": "qualified_id",
+                "value": "search.empty_location"
+              },
+              "redefines": false
+            },
+            {
+              "direction": "out",
+              "name": "status",
+              "default": null,
+              "redefines": false
+            }
+          ],
+          "parts": null,
+          "nested_actions": null,
+          "flow": null
+        },
+        {
+          "name": "drop",
+          "type": null,
+          "attributes": null,
+          "params": [
+            {
+              "direction": "in",
+              "name": "object",
+              "default": {
+                "type": "string",
+                "value": "euro_pallet_1"
+              },
+              "redefines": false
+            },
+            {
+              "direction": "out",
+              "name": "status",
+              "default": null,
+              "redefines": false
+            }
+          ],
+          "parts": null,
+          "nested_actions": null,
+          "flow": null
+        }
+      ],
+      "flow": [
+        {
+          "name": "search"
+        },
+        {
+          "type": "if",
+          "condition": "defaultLocation.X == 49.0 and defaultLocation.Y == 50.0 and defaultLocation.Z == 50.0",
+          "if_branch": [
+            {
+              "name": "pick_up"
+            }
+          ],
+          "else_branch": [
+            {
+              "name": "search"
+            }
+          ]
+        },
+        {
+          "name": "move"
+        },
+        {
+          "name": "drop"
+        }
+      ]
+    }
+  ],
+  "parts": []
+}

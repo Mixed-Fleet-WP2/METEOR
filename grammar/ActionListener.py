@@ -71,6 +71,51 @@ class ActionListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by Action#ifStatement.
+    def enterIfStatement(self, ctx:Action.IfStatementContext):
+        pass
+
+    # Exit a parse tree produced by Action#ifStatement.
+    def exitIfStatement(self, ctx:Action.IfStatementContext):
+        pass
+
+
+    # Enter a parse tree produced by Action#flowBody.
+    def enterFlowBody(self, ctx:Action.FlowBodyContext):
+        pass
+
+    # Exit a parse tree produced by Action#flowBody.
+    def exitFlowBody(self, ctx:Action.FlowBodyContext):
+        pass
+
+
+    # Enter a parse tree produced by Action#condition.
+    def enterCondition(self, ctx:Action.ConditionContext):
+        pass
+
+    # Exit a parse tree produced by Action#condition.
+    def exitCondition(self, ctx:Action.ConditionContext):
+        pass
+
+
+    # Enter a parse tree produced by Action#comparison.
+    def enterComparison(self, ctx:Action.ComparisonContext):
+        pass
+
+    # Exit a parse tree produced by Action#comparison.
+    def exitComparison(self, ctx:Action.ComparisonContext):
+        pass
+
+
+    # Enter a parse tree produced by Action#compareOp.
+    def enterCompareOp(self, ctx:Action.CompareOpContext):
+        pass
+
+    # Exit a parse tree produced by Action#compareOp.
+    def exitCompareOp(self, ctx:Action.CompareOpContext):
+        pass
+
+
     # Enter a parse tree produced by Action#expr.
     def enterExpr(self, ctx:Action.ExprContext):
         pass

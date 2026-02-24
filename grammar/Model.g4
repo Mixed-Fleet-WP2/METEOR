@@ -5,5 +5,17 @@ options { tokenVocab=CommonLexer; }
 import Action, Part;
 
 model
-    : (action | part)* EOF
+    : packageDecl? importDecl* (action | part)* EOF
+    ;
+
+packageDecl
+    : PACKAGE qualifiedName LBRACE (importDecl | action | part)* RBRACE
+    ;
+
+importDecl
+    : PRIVATE? IMPORT qualifiedName COLONCOLON STAR SEMI
+    ;
+
+qualifiedName
+    : ID (COLONCOLON ID)*
     ;

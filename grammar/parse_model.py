@@ -8,11 +8,49 @@ from rich import print as rprint
 class MXFVisitor(ModelVisitor):
     def __init__(self):
         super().__init__()
-        self.actions = []       # top-level actions
-        self.parts = []         # top-level parts
+        self.package_name = None  # Package name if declared
+        self.imports = []         # List of import statements
+        self.actions = []         # top-level actions
+        self.parts = []           # top-level parts
         self.nested_actions = {}  # map action_name -> action dict
         self.current_action = None
         self.current_flow = []
+
+    def visitPackageDecl(self, ctx):
+        """Visit package declaration: package QualifiedName { ... }"""
+        self.package_name = self.visitQualifiedName(ctx.qualifiedName())
+        
+        # Visit imports and actions/parts inside the package
+        for import_ctx in ctx.importDecl():
+            self.visitImportDecl(import_ctx)
+        
+        for action_ctx in ctx.action():
+            self.visitAction(action_ctx)  # visitAction adds to self.actions internally
+        
+        for part_ctx in ctx.part():
+            self.parts.append(self.visitPart(part_ctx))
+        
+        return None
+    
+    def visitImportDecl(self, ctx):
+        """Visit import declaration: private? import QualifiedName::*;"""
+        is_private = ctx.PRIVATE() is not None
+        qualified_name = self.visitQualifiedName(ctx.qualifiedName())
+        
+        import_info = {
+            "private": is_private,
+            "qualified_name": qualified_name,
+            "wildcard": True  # Currently only supporting ::* imports
+        }
+        self.imports.append(import_info)
+        return import_info
+    
+    def visitQualifiedName(self, ctx):
+        """Visit qualified name: ID::ID::..."""
+        if ctx is None:
+            return None
+        ids = [id_node.getText() for id_node in ctx.ID()]
+        return "::".join(ids)
 
     def visitAction(self, ctx):
         action_name = ctx.ID(0).getText()
@@ -208,9 +246,119 @@ class MXFVisitor(ModelVisitor):
                 action_obj = self.nested_actions.get(action_name, {"name": action_name})
                 self.current_flow.append(action_obj)
                 return action_obj
+        elif ctx.ifStatement():
+            return self.visitIfStatement(ctx.ifStatement())
         return None
 
-def parse_model(input_file):
+    def visitIfStatement(self, ctx):
+        """Visit if statement: if(condition) { perform action; } else { perform action; }"""
+        # Parse condition
+        condition_str = self.visitCondition(ctx.condition()) if ctx.condition() else None
+        
+        # Get all flowBody contexts
+        all_flow_bodies = ctx.flowBody()
+        
+        # Determine how many belong to if vs else branch
+        # Count braces to figure out the split
+        has_else = ctx.ELSE() is not None
+        
+        if has_else:
+            # Need to split flowBody between if and else blocks
+            # This is tricky - we need to track which flows belong where
+            # For now, simple approach: get LBRACE positions
+            if_branch = []
+            else_branch = []
+            
+            # Find the index where else starts by looking at the parse tree structure
+            # A simpler approach: collect all, split in half (works for simple cases)
+            mid = len(all_flow_bodies) // 2
+            
+            for i, flow_ctx in enumerate(all_flow_bodies):
+                if flow_ctx.PERFORM():
+                    action_name = flow_ctx.ID().getText()
+                    action_obj = self.nested_actions.get(action_name, {"name": action_name})
+                    if i < mid:
+                        if_branch.append(action_obj)
+                    else:
+                        else_branch.append(action_obj)
+        else:
+            # No else clause, all flows belong to if
+            if_branch = []
+            for flow_ctx in all_flow_bodies:
+                if flow_ctx.PERFORM():
+                    action_name = flow_ctx.ID().getText()
+                    action_obj = self.nested_actions.get(action_name, {"name": action_name})
+                    if_branch.append(action_obj)
+            else_branch = None
+        
+        # Create if statement object
+        if_obj = {
+            "type": "if",
+            "condition": condition_str,
+            "if_branch": if_branch,
+            "else_branch": else_branch
+        }
+        
+        self.current_flow.append(if_obj)
+        return if_obj
+
+    def visitCondition(self, ctx):
+        """Visit condition and build string representation"""
+        if ctx.AND():
+            # Binary AND
+            left = self.visitCondition(ctx.condition(0))
+            right = self.visitCondition(ctx.condition(1))
+            return f"{left} and {right}"
+        elif ctx.OR():
+            # Binary OR
+            left = self.visitCondition(ctx.condition(0))
+            right = self.visitCondition(ctx.condition(1))
+            return f"{left} or {right}"
+        elif ctx.NOT():
+            # Unary NOT
+            inner = self.visitCondition(ctx.condition(0))
+            return f"not ({inner})"
+        elif ctx.LPAREN() and ctx.RPAREN():
+            # Parenthesized condition
+            inner = self.visitCondition(ctx.condition(0))
+            return f"({inner})"
+        elif ctx.comparison():
+            # Comparison expression
+            return self.visitComparison(ctx.comparison())
+        return "unknown"
+
+    def visitComparison(self, ctx):
+        """Visit comparison: expr op expr"""
+        left = self.visitExpr(ctx.expr(0))
+        right = self.visitExpr(ctx.expr(1))
+        op = ctx.compareOp().getText()
+        return f"{left} {op} {right}"
+
+    def visitExpr(self, ctx):
+        """Visit expression and return string representation"""
+        if ctx.STRING():
+            return ctx.STRING().getText()
+        elif ctx.NUMBER():
+            return ctx.NUMBER().getText()
+        elif len(ctx.ID()) == 3:  # ID.ID.ID
+            return f"{ctx.ID(0).getText()}.{ctx.ID(1).getText()}.{ctx.ID(2).getText()}"
+        elif len(ctx.ID()) == 2:  # ID.ID
+            return f"{ctx.ID(0).getText()}.{ctx.ID(1).getText()}"
+        elif len(ctx.ID()) == 1:  # ID
+            return ctx.ID(0).getText()
+        return "unknown"
+
+def parse_model(input_file, output_format='sysml'):
+    """
+    Parse a SysML model file
+    
+    Args:
+        input_file: Path to the .sysml file
+        output_format: 'sysml' (default) or 'uppaal'
+    
+    Returns:
+        Dict with parsed model in requested format
+    """
     input_stream = FileStream(input_file, encoding='utf-8')
     lexer = CommonLexer(input_stream)
     stream = CommonTokenStream(lexer)
@@ -219,31 +367,64 @@ def parse_model(input_file):
 
     visitor = MXFVisitor()
     visitor.visit(tree)
-    return visitor.actions
+    
+    result = {
+        "package": visitor.package_name,
+        "imports": visitor.imports,
+        "actions": visitor.actions,
+        "parts": visitor.parts
+    }
+    
+    if output_format == 'uppaal':
+        # Import here to avoid circular dependency
+        import sys
+        import os
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from uppaal_transformer import transform_to_uppaal
+        return transform_to_uppaal(result)
+    
+    return result
 
 def main():
-    input_file = "sample.mxf"  
-    output_file = "sample.json"  
-    input_stream = FileStream(input_file, encoding='utf-8')
+    input_file = "sample.sysml"  
+    output_file = "sample.json"
+    uppaal_output_file = "sample_uppaal.json"
+    
+    # Parse SysML format
+    result_sysml = parse_model(input_file, output_format='sysml')
 
-    lexer = CommonLexer(input_stream)
-    stream = CommonTokenStream(lexer)
-    parser = ModelParser(stream)
-    tree = parser.model()
+    rprint("[bold green]Parsed Model (SysML format):[/bold green]")
+    rprint(f"Package: {result_sysml['package']}")
+    rprint(f"Imports: {len(result_sysml['imports'])}")
+    rprint(f"Actions: {len(result_sysml['actions'])}")
 
-    visitor = MXFVisitor()
-    visitor.visit(tree)
-
-    rprint("[bold green]Parsed Actions (with nested flow objects):[/bold green]")
-    #rprint(json.dumps(visitor.actions, indent=2))
-
-    # Save to JSON file
+    # Save SysML format JSON
     try:
         with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(visitor.actions, f, indent=2, ensure_ascii=False)
-        rprint(f"[bold blue]JSON output saved to: {output_file}[/bold blue]")
+            json.dump(result_sysml, f, indent=2, ensure_ascii=False)
+        rprint(f"[bold blue]SysML JSON saved to: {output_file}[/bold blue]")
     except IOError as e:
-        rprint(f"[bold red]Error saving JSON file: {e}[/bold red]")
+        rprint(f"[bold red]Error saving SysML JSON: {e}[/bold red]")
+    
+    # Generate UPPAAL format
+    try:
+        result_uppaal = parse_model(input_file, output_format='uppaal')
+        
+        rprint("\n[bold green]Generated UPPAAL Model:[/bold green]")
+        rprint(f"Templates: {len(result_uppaal['model']['templates'])}")
+        for template in result_uppaal['model']['templates']:
+            rprint(f"  - {template['name']} ({template['type']}): {len(template['states'])} states, {len(template['transitions'])} transitions")
+        rprint(f"Channels: {len(result_uppaal['model']['channels'])}")
+        rprint(f"Global Variables: {len(result_uppaal['model']['global_declarations']['variables'])}")
+        
+        # Save UPPAAL format JSON
+        with open(uppaal_output_file, 'w', encoding='utf-8') as f:
+            json.dump(result_uppaal, f, indent=2, ensure_ascii=False)
+        rprint(f"[bold blue]UPPAAL JSON saved to: {uppaal_output_file}[/bold blue]")
+    except Exception as e:
+        rprint(f"[bold red]Error generating UPPAAL JSON: {e}[/bold red]")
+        import traceback
+        traceback.print_exc()
 
 
 

@@ -1,0 +1,224 @@
+<?xml version="1.0" ?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Global declarations
+
+// Type definitions
+typedef struct { int X; int Y; int Z; } Coordinate;
+
+// Synchronization channels
+broadcast chan search_req;
+chan search_done;
+broadcast chan pick_up_req;
+chan pick_up_done;
+broadcast chan move_req;
+chan move_done;
+broadcast chan drop_req;
+chan drop_done;
+
+// Global clocks
+clock timeNow;
+
+// Constants
+const int defaultLocation = 3;
+const int FORKLIFT_ID = FORK-001;
+const int UAV_ID = DRONE-001;
+
+// Global variables
+Coordinate defaultLocationObject = { 50, 50, 50 };  // Mission attribute
+int v_search_empty_location = 0;  // Output from search.empty_location
+int v_search_status = 0;  // Output from search.status
+int v_pick_up_status = 0;  // Output from pick_up.status
+int v_move_status = 0;  // Output from move.status
+int v_drop_status = 0;  // Output from drop.status
+
+// Status flags
+bool mission_complete = false;
+</declaration>
+	<template>
+		<name>Controller</name>
+		<declaration/>
+		<location id="S0" x="-1000" y="-300">
+			<name x="-1010" y="-334">Start</name>
+			<committed/>
+		</location>
+		<location id="S1" x="-750" y="-300">
+			<name x="-760" y="-334">Wait_search</name>
+		</location>
+		<location id="S2" x="-500" y="-300">
+			<name x="-510" y="-334">After_search</name>
+		</location>
+		<location id="S3" x="-250" y="-300">
+			<name x="-260" y="-334">Decision</name>
+		</location>
+		<location id="S4" x="-1000" y="-100">
+			<name x="-1010" y="-134">Wait_pick_up</name>
+		</location>
+		<location id="S5" x="-750" y="-100">
+			<name x="-760" y="-134">Wait_search</name>
+		</location>
+		<location id="S6" x="-500" y="-100">
+			<name x="-510" y="-134">Wait_move</name>
+		</location>
+		<location id="S7" x="-250" y="-100">
+			<name x="-260" y="-134">After_move</name>
+		</location>
+		<location id="S8" x="-1000" y="100">
+			<name x="-1010" y="66">Wait_drop</name>
+		</location>
+		<location id="S9" x="-750" y="100">
+			<name x="-760" y="66">After_drop</name>
+		</location>
+		<location id="S10" x="-500" y="100">
+			<name x="-510" y="66">Done</name>
+		</location>
+		<init ref="S0"/>
+		<transition>
+			<source ref="S0"/>
+			<target ref="S1"/>
+			<label kind="synchronisation">search_req!</label>
+		</transition>
+		<transition>
+			<source ref="S1"/>
+			<target ref="S2"/>
+			<label kind="synchronisation">search_done?</label>
+		</transition>
+		<transition>
+			<source ref="S2"/>
+			<target ref="S3"/>
+		</transition>
+		<transition>
+			<source ref="S3"/>
+			<target ref="S4"/>
+			<label kind="guard">defaultLocation == 3</label>
+			<label kind="synchronisation">pick_up_req!</label>
+		</transition>
+		<transition>
+			<source ref="S3"/>
+			<target ref="S5"/>
+			<label kind="guard">!(defaultLocation == 3)</label>
+			<label kind="synchronisation">search_req!</label>
+		</transition>
+		<transition>
+			<source ref="S5"/>
+			<target ref="S6"/>
+			<label kind="synchronisation">move_req!</label>
+		</transition>
+		<transition>
+			<source ref="S6"/>
+			<target ref="S7"/>
+			<label kind="synchronisation">move_done?</label>
+		</transition>
+		<transition>
+			<source ref="S7"/>
+			<target ref="S8"/>
+			<label kind="synchronisation">drop_req!</label>
+		</transition>
+		<transition>
+			<source ref="S8"/>
+			<target ref="S9"/>
+			<label kind="synchronisation">drop_done?</label>
+		</transition>
+		<transition>
+			<source ref="S9"/>
+			<target ref="S10"/>
+		</transition>
+	</template>
+	<template>
+		<name>Forklift</name>
+		<declaration>// Local clocks
+clock clock_forklift_1;
+</declaration>
+		<location id="Idle" x="-1000" y="-300">
+			<name x="-1010" y="-334">Idle</name>
+		</location>
+		<location id="Pick_up" x="-750" y="-300">
+			<name x="-760" y="-334">Pick_up</name>
+			<label kind="invariant" x="-760" y="-290">clock_forklift_1 &lt;= 30</label>
+		</location>
+		<location id="Move" x="-500" y="-300">
+			<name x="-510" y="-334">Move</name>
+			<label kind="invariant" x="-510" y="-290">clock_forklift_1 &lt;= 30</label>
+		</location>
+		<location id="Drop" x="-250" y="-300">
+			<name x="-260" y="-334">Drop</name>
+			<label kind="invariant" x="-260" y="-290">clock_forklift_1 &lt;= 30</label>
+		</location>
+		<location id="Done" x="-1000" y="-100">
+			<name x="-1010" y="-134">Done</name>
+		</location>
+		<init ref="Idle"/>
+		<transition>
+			<source ref="Idle"/>
+			<target ref="Pick_up"/>
+			<label kind="synchronisation">pick_up_req?</label>
+			<label kind="assignment">clock_forklift_1 = 0</label>
+		</transition>
+		<transition>
+			<source ref="Pick_up"/>
+			<target ref="Idle"/>
+			<label kind="guard">clock_forklift_1 &gt;= 3</label>
+			<label kind="synchronisation">pick_up_done!</label>
+			<label kind="assignment">v_pick_up_status = 1</label>
+		</transition>
+		<transition>
+			<source ref="Idle"/>
+			<target ref="Move"/>
+			<label kind="synchronisation">move_req?</label>
+			<label kind="assignment">clock_forklift_1 = 0</label>
+		</transition>
+		<transition>
+			<source ref="Move"/>
+			<target ref="Idle"/>
+			<label kind="guard">clock_forklift_1 &gt;= 3</label>
+			<label kind="synchronisation">move_done!</label>
+			<label kind="assignment">v_move_status = 1</label>
+		</transition>
+		<transition>
+			<source ref="Idle"/>
+			<target ref="Drop"/>
+			<label kind="synchronisation">drop_req?</label>
+			<label kind="assignment">clock_forklift_1 = 0</label>
+		</transition>
+		<transition>
+			<source ref="Drop"/>
+			<target ref="Done"/>
+			<label kind="guard">clock_forklift_1 &gt;= 3</label>
+			<label kind="synchronisation">drop_done!</label>
+			<label kind="assignment">v_drop_status = 1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Uav</name>
+		<declaration>// Local clocks
+clock clock_drone_1;
+</declaration>
+		<location id="Idle" x="-1000" y="-300">
+			<name x="-1010" y="-334">Idle</name>
+		</location>
+		<location id="Search" x="-750" y="-300">
+			<name x="-760" y="-334">Search</name>
+			<label kind="invariant" x="-760" y="-290">clock_drone_1 &lt;= 30</label>
+		</location>
+		<location id="Done" x="-500" y="-300">
+			<name x="-510" y="-334">Done</name>
+		</location>
+		<init ref="Idle"/>
+		<transition>
+			<source ref="Idle"/>
+			<target ref="Search"/>
+			<label kind="synchronisation">search_req?</label>
+			<label kind="assignment">clock_drone_1 = 0</label>
+		</transition>
+		<transition>
+			<source ref="Search"/>
+			<target ref="Done"/>
+			<label kind="guard">clock_drone_1 &gt;= 3</label>
+			<label kind="synchronisation">search_done!</label>
+			<label kind="assignment">v_search_status = 1</label>
+		</transition>
+	</template>
+	<system>// System declaration
+system Controller, Forklift, Uav;</system>
+	<queries/>
+</nta>

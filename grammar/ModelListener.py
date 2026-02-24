@@ -17,6 +17,33 @@ class ModelListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by Model#packageDecl.
+    def enterPackageDecl(self, ctx:Model.PackageDeclContext):
+        pass
+
+    # Exit a parse tree produced by Model#packageDecl.
+    def exitPackageDecl(self, ctx:Model.PackageDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by Model#importDecl.
+    def enterImportDecl(self, ctx:Model.ImportDeclContext):
+        pass
+
+    # Exit a parse tree produced by Model#importDecl.
+    def exitImportDecl(self, ctx:Model.ImportDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by Model#qualifiedName.
+    def enterQualifiedName(self, ctx:Model.QualifiedNameContext):
+        pass
+
+    # Exit a parse tree produced by Model#qualifiedName.
+    def exitQualifiedName(self, ctx:Model.QualifiedNameContext):
+        pass
+
+
     # Enter a parse tree produced by Model#action.
     def enterAction(self, ctx:Model.ActionContext):
         pass
@@ -77,6 +104,51 @@ class ModelListener(ParseTreeListener):
 
     # Exit a parse tree produced by Model#thenStep.
     def exitThenStep(self, ctx:Model.ThenStepContext):
+        pass
+
+
+    # Enter a parse tree produced by Model#ifStatement.
+    def enterIfStatement(self, ctx:Model.IfStatementContext):
+        pass
+
+    # Exit a parse tree produced by Model#ifStatement.
+    def exitIfStatement(self, ctx:Model.IfStatementContext):
+        pass
+
+
+    # Enter a parse tree produced by Model#flowBody.
+    def enterFlowBody(self, ctx:Model.FlowBodyContext):
+        pass
+
+    # Exit a parse tree produced by Model#flowBody.
+    def exitFlowBody(self, ctx:Model.FlowBodyContext):
+        pass
+
+
+    # Enter a parse tree produced by Model#condition.
+    def enterCondition(self, ctx:Model.ConditionContext):
+        pass
+
+    # Exit a parse tree produced by Model#condition.
+    def exitCondition(self, ctx:Model.ConditionContext):
+        pass
+
+
+    # Enter a parse tree produced by Model#comparison.
+    def enterComparison(self, ctx:Model.ComparisonContext):
+        pass
+
+    # Exit a parse tree produced by Model#comparison.
+    def exitComparison(self, ctx:Model.ComparisonContext):
+        pass
+
+
+    # Enter a parse tree produced by Model#compareOp.
+    def enterCompareOp(self, ctx:Model.CompareOpContext):
+        pass
+
+    # Exit a parse tree produced by Model#compareOp.
+    def exitCompareOp(self, ctx:Model.CompareOpContext):
         pass
 
 

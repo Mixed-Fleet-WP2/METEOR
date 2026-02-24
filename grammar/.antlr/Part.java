@@ -16,9 +16,12 @@ public class Part extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		ACTION=1, PART=2, IN=3, OUT=4, PERFORM=5, ATTRIBUTE=6, REDEFINES=7, FIRST=8, 
-		THEN=9, DONE=10, COLON=11, SEMI=12, EQUAL=13, DOT=14, LBRACE=15, RBRACE=16, 
-		LBRACK=17, RBRACK=18, ID=19, STRING=20, NUMBER=21, WS=22;
+		PACKAGE=1, IMPORT=2, PRIVATE=3, ACTION=4, PART=5, IN=6, OUT=7, PERFORM=8, 
+		ATTRIBUTE=9, REDEFINES=10, FIRST=11, THEN=12, DONE=13, IF=14, ELSE=15, 
+		AND=16, OR=17, NOT=18, EQUAL_EQ=19, NOT_EQ=20, GREATER_EQ=21, LESS_EQ=22, 
+		GREATER=23, LESS=24, COLONCOLON=25, COLON=26, SEMI=27, EQUAL=28, DOT=29, 
+		STAR=30, LBRACE=31, RBRACE=32, LBRACK=33, RBRACK=34, LPAREN=35, RPAREN=36, 
+		ID=37, STRING=38, NUMBER=39, WS=40;
 	public static final int
 		RULE_part = 0, RULE_partBody = 1, RULE_expr = 2, RULE_unit = 3;
 	private static String[] makeRuleNames() {
@@ -30,17 +33,22 @@ public class Part extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'action'", "'part'", "'in'", "'out'", "'perform'", "'attribute'", 
-			"':>>'", "'first'", "'then'", "'done'", "':'", "';'", "'='", "'.'", "'{'", 
-			"'}'", "'['", "']'"
+			null, "'package'", "'import'", "'private'", "'action'", "'part'", "'in'", 
+			"'out'", "'perform'", "'attribute'", "':>>'", "'first'", "'then'", "'done'", 
+			"'if'", "'else'", "'and'", "'or'", "'not'", "'=='", "'!='", "'>='", "'<='", 
+			"'>'", "'<'", "'::'", "':'", "';'", "'='", "'.'", "'*'", "'{'", "'}'", 
+			"'['", "']'", "'('", "')'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "ACTION", "PART", "IN", "OUT", "PERFORM", "ATTRIBUTE", "REDEFINES", 
-			"FIRST", "THEN", "DONE", "COLON", "SEMI", "EQUAL", "DOT", "LBRACE", "RBRACE", 
-			"LBRACK", "RBRACK", "ID", "STRING", "NUMBER", "WS"
+			null, "PACKAGE", "IMPORT", "PRIVATE", "ACTION", "PART", "IN", "OUT", 
+			"PERFORM", "ATTRIBUTE", "REDEFINES", "FIRST", "THEN", "DONE", "IF", "ELSE", 
+			"AND", "OR", "NOT", "EQUAL_EQ", "NOT_EQ", "GREATER_EQ", "LESS_EQ", "GREATER", 
+			"LESS", "COLONCOLON", "COLON", "SEMI", "EQUAL", "DOT", "STAR", "LBRACE", 
+			"RBRACE", "LBRACK", "RBRACK", "LPAREN", "RPAREN", "ID", "STRING", "NUMBER", 
+			"WS"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -263,7 +271,7 @@ public class Part extends Parser {
 			{
 			setState(36);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 3670016L) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 962072674304L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -321,34 +329,33 @@ public class Part extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001\u0016+\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
-		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0001\u0000\u0001\u0000\u0001"+
-		"\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0005\u0000\u000f\b\u0000\n"+
-		"\u0000\f\u0000\u0012\t\u0000\u0001\u0000\u0001\u0000\u0001\u0001\u0001"+
-		"\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0003\u0001\u001c"+
-		"\b\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0003"+
-		"\u0001#\b\u0001\u0001\u0002\u0001\u0002\u0001\u0003\u0001\u0003\u0001"+
-		"\u0003\u0001\u0003\u0001\u0003\u0000\u0000\u0004\u0000\u0002\u0004\u0006"+
-		"\u0000\u0001\u0001\u0000\u0013\u0015)\u0000\b\u0001\u0000\u0000\u0000"+
-		"\u0002\"\u0001\u0000\u0000\u0000\u0004$\u0001\u0000\u0000\u0000\u0006"+
-		"&\u0001\u0000\u0000\u0000\b\t\u0005\u0002\u0000\u0000\t\n\u0005\u0013"+
-		"\u0000\u0000\n\u000b\u0005\u000b\u0000\u0000\u000b\f\u0005\u0013\u0000"+
-		"\u0000\f\u0010\u0005\u000f\u0000\u0000\r\u000f\u0003\u0002\u0001\u0000"+
-		"\u000e\r\u0001\u0000\u0000\u0000\u000f\u0012\u0001\u0000\u0000\u0000\u0010"+
-		"\u000e\u0001\u0000\u0000\u0000\u0010\u0011\u0001\u0000\u0000\u0000\u0011"+
-		"\u0013\u0001\u0000\u0000\u0000\u0012\u0010\u0001\u0000\u0000\u0000\u0013"+
-		"\u0014\u0005\u0010\u0000\u0000\u0014\u0001\u0001\u0000\u0000\u0000\u0015"+
-		"\u0016\u0005\u0006\u0000\u0000\u0016\u0017\u0005\u0007\u0000\u0000\u0017"+
-		"\u0018\u0005\u0013\u0000\u0000\u0018\u0019\u0005\r\u0000\u0000\u0019\u001b"+
-		"\u0003\u0004\u0002\u0000\u001a\u001c\u0003\u0006\u0003\u0000\u001b\u001a"+
-		"\u0001\u0000\u0000\u0000\u001b\u001c\u0001\u0000\u0000\u0000\u001c\u001d"+
-		"\u0001\u0000\u0000\u0000\u001d\u001e\u0005\f\u0000\u0000\u001e#\u0001"+
-		"\u0000\u0000\u0000\u001f \u0005\u0005\u0000\u0000 !\u0005\u0013\u0000"+
-		"\u0000!#\u0005\f\u0000\u0000\"\u0015\u0001\u0000\u0000\u0000\"\u001f\u0001"+
-		"\u0000\u0000\u0000#\u0003\u0001\u0000\u0000\u0000$%\u0007\u0000\u0000"+
-		"\u0000%\u0005\u0001\u0000\u0000\u0000&\'\u0005\u0011\u0000\u0000\'(\u0005"+
-		"\u0013\u0000\u0000()\u0005\u0012\u0000\u0000)\u0007\u0001\u0000\u0000"+
-		"\u0000\u0003\u0010\u001b\"";
+		"\u0004\u0001(+\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002\u0002"+
+		"\u0007\u0002\u0002\u0003\u0007\u0003\u0001\u0000\u0001\u0000\u0001\u0000"+
+		"\u0001\u0000\u0001\u0000\u0001\u0000\u0005\u0000\u000f\b\u0000\n\u0000"+
+		"\f\u0000\u0012\t\u0000\u0001\u0000\u0001\u0000\u0001\u0001\u0001\u0001"+
+		"\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0003\u0001\u001c\b\u0001"+
+		"\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0003\u0001"+
+		"#\b\u0001\u0001\u0002\u0001\u0002\u0001\u0003\u0001\u0003\u0001\u0003"+
+		"\u0001\u0003\u0001\u0003\u0000\u0000\u0004\u0000\u0002\u0004\u0006\u0000"+
+		"\u0001\u0001\u0000%\')\u0000\b\u0001\u0000\u0000\u0000\u0002\"\u0001\u0000"+
+		"\u0000\u0000\u0004$\u0001\u0000\u0000\u0000\u0006&\u0001\u0000\u0000\u0000"+
+		"\b\t\u0005\u0005\u0000\u0000\t\n\u0005%\u0000\u0000\n\u000b\u0005\u001a"+
+		"\u0000\u0000\u000b\f\u0005%\u0000\u0000\f\u0010\u0005\u001f\u0000\u0000"+
+		"\r\u000f\u0003\u0002\u0001\u0000\u000e\r\u0001\u0000\u0000\u0000\u000f"+
+		"\u0012\u0001\u0000\u0000\u0000\u0010\u000e\u0001\u0000\u0000\u0000\u0010"+
+		"\u0011\u0001\u0000\u0000\u0000\u0011\u0013\u0001\u0000\u0000\u0000\u0012"+
+		"\u0010\u0001\u0000\u0000\u0000\u0013\u0014\u0005 \u0000\u0000\u0014\u0001"+
+		"\u0001\u0000\u0000\u0000\u0015\u0016\u0005\t\u0000\u0000\u0016\u0017\u0005"+
+		"\n\u0000\u0000\u0017\u0018\u0005%\u0000\u0000\u0018\u0019\u0005\u001c"+
+		"\u0000\u0000\u0019\u001b\u0003\u0004\u0002\u0000\u001a\u001c\u0003\u0006"+
+		"\u0003\u0000\u001b\u001a\u0001\u0000\u0000\u0000\u001b\u001c\u0001\u0000"+
+		"\u0000\u0000\u001c\u001d\u0001\u0000\u0000\u0000\u001d\u001e\u0005\u001b"+
+		"\u0000\u0000\u001e#\u0001\u0000\u0000\u0000\u001f \u0005\b\u0000\u0000"+
+		" !\u0005%\u0000\u0000!#\u0005\u001b\u0000\u0000\"\u0015\u0001\u0000\u0000"+
+		"\u0000\"\u001f\u0001\u0000\u0000\u0000#\u0003\u0001\u0000\u0000\u0000"+
+		"$%\u0007\u0000\u0000\u0000%\u0005\u0001\u0000\u0000\u0000&\'\u0005!\u0000"+
+		"\u0000\'(\u0005%\u0000\u0000()\u0005\"\u0000\u0000)\u0007\u0001\u0000"+
+		"\u0000\u0000\u0003\u0010\u001b\"";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
