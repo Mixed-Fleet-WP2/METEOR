@@ -1,0 +1,525 @@
+{
+  "package": "MixedFleet",
+  "model": {
+    "name": "Mission",
+    "type": "action",
+    "global_declarations": {
+      "clocks": [
+        "timeNow"
+      ],
+      "variables": [
+        {
+          "name": "defaultLocation",
+          "type": "int",
+          "initial": 3.0,
+          "comment": "Mission attribute"
+        },
+        {
+          "name": "defaultLocationObject",
+          "type": "Coordinate",
+          "initial": null,
+          "fields": {
+            "X": 50.0,
+            "Y": 50.0,
+            "Z": 50.0
+          },
+          "comment": "Mission attribute"
+        },
+        {
+          "name": "v_search_empty_location",
+          "type": "int",
+          "initial": 0,
+          "comment": "Output from search.empty_location"
+        },
+        {
+          "name": "v_search_status",
+          "type": "int",
+          "initial": 0,
+          "comment": "Output from search.status"
+        },
+        {
+          "name": "v_pick_up_status",
+          "type": "int",
+          "initial": 0,
+          "comment": "Output from pick_up.status"
+        },
+        {
+          "name": "v_move_status",
+          "type": "int",
+          "initial": 0,
+          "comment": "Output from move.status"
+        },
+        {
+          "name": "v_drop_status",
+          "type": "int",
+          "initial": 0,
+          "comment": "Output from drop.status"
+        }
+      ],
+      "constants": [],
+      "typedefs": [
+        {
+          "name": "Coordinate",
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "X",
+              "type": "int"
+            },
+            {
+              "name": "Y",
+              "type": "int"
+            },
+            {
+              "name": "Z",
+              "type": "int"
+            }
+          ]
+        }
+      ]
+    },
+    "channels": [
+      {
+        "name": "search_req",
+        "type": "broadcast",
+        "comment": "Request search action"
+      },
+      {
+        "name": "search_done",
+        "type": "binary",
+        "comment": "search action completed"
+      },
+      {
+        "name": "pick_up_req",
+        "type": "broadcast",
+        "comment": "Request pick_up action"
+      },
+      {
+        "name": "pick_up_done",
+        "type": "binary",
+        "comment": "pick_up action completed"
+      },
+      {
+        "name": "move_req",
+        "type": "broadcast",
+        "comment": "Request move action"
+      },
+      {
+        "name": "move_done",
+        "type": "binary",
+        "comment": "move action completed"
+      },
+      {
+        "name": "drop_req",
+        "type": "broadcast",
+        "comment": "Request drop action"
+      },
+      {
+        "name": "drop_done",
+        "type": "binary",
+        "comment": "drop action completed"
+      }
+    ],
+    "templates": [
+      {
+        "name": "Controller",
+        "type": "orchestrator",
+        "local_declarations": {
+          "clocks": [],
+          "variables": []
+        },
+        "states": [
+          {
+            "id": "S0",
+            "name": "Start",
+            "initial": true,
+            "committed": true,
+            "invariant": null
+          },
+          {
+            "id": "S1",
+            "name": "Wait_search",
+            "invariant": null
+          },
+          {
+            "id": "S2",
+            "name": "After_search",
+            "invariant": null
+          },
+          {
+            "id": "S3",
+            "name": "Decision",
+            "invariant": null
+          },
+          {
+            "id": "S4",
+            "name": "Wait_pick_up",
+            "invariant": null
+          },
+          {
+            "id": "S5",
+            "name": "Wait_search",
+            "invariant": null
+          },
+          {
+            "id": "S6",
+            "name": "Wait_move",
+            "invariant": null
+          },
+          {
+            "id": "S7",
+            "name": "After_move",
+            "invariant": null
+          },
+          {
+            "id": "S8",
+            "name": "Wait_drop",
+            "invariant": null
+          },
+          {
+            "id": "S9",
+            "name": "After_drop",
+            "invariant": null
+          },
+          {
+            "id": "S10",
+            "name": "Done",
+            "invariant": null
+          }
+        ],
+        "transitions": [
+          {
+            "from": "S0",
+            "to": "S1",
+            "guard": null,
+            "sync": "search_req!",
+            "update": []
+          },
+          {
+            "from": "S1",
+            "to": "S2",
+            "guard": null,
+            "sync": "search_done?",
+            "update": []
+          },
+          {
+            "from": "S2",
+            "to": "S3",
+            "guard": null,
+            "sync": null,
+            "update": []
+          },
+          {
+            "from": "S3",
+            "to": "S4",
+            "guard": "defaultLocation == 3",
+            "sync": "pick_up_req!",
+            "update": []
+          },
+          {
+            "from": "S3",
+            "to": "S5",
+            "guard": "!(defaultLocation == 3)",
+            "sync": "search_req!",
+            "update": []
+          },
+          {
+            "from": "S5",
+            "to": "S6",
+            "guard": null,
+            "sync": "move_req!",
+            "update": []
+          },
+          {
+            "from": "S6",
+            "to": "S7",
+            "guard": null,
+            "sync": "move_done?",
+            "update": []
+          },
+          {
+            "from": "S7",
+            "to": "S8",
+            "guard": null,
+            "sync": "drop_req!",
+            "update": []
+          },
+          {
+            "from": "S8",
+            "to": "S9",
+            "guard": null,
+            "sync": "drop_done?",
+            "update": []
+          },
+          {
+            "from": "S9",
+            "to": "S10",
+            "guard": null,
+            "sync": null,
+            "update": []
+          }
+        ]
+      },
+      {
+        "name": "Forklift",
+        "type": "agent",
+        "instance": "forklift_1",
+        "id": "FORK-001",
+        "attributes": {
+          "autonomyLevel": "1",
+          "liftingCapacity": "5000.0",
+          "forkHeight": "6.0"
+        },
+        "local_declarations": {
+          "clocks": [
+            "clock_forklift_1"
+          ],
+          "variables": []
+        },
+        "states": [
+          {
+            "id": "Idle",
+            "name": "Idle",
+            "initial": true,
+            "invariant": null
+          },
+          {
+            "id": "Pick_up",
+            "name": "Pick_up",
+            "invariant": "clock_forklift_1 <= 30"
+          },
+          {
+            "id": "Move",
+            "name": "Move",
+            "invariant": "clock_forklift_1 <= 30"
+          },
+          {
+            "id": "Drop",
+            "name": "Drop",
+            "invariant": "clock_forklift_1 <= 30"
+          },
+          {
+            "id": "Done",
+            "name": "Done",
+            "invariant": null
+          }
+        ],
+        "transitions": [
+          {
+            "from": "Idle",
+            "to": "Pick_up",
+            "guard": null,
+            "sync": "pick_up_req?",
+            "update": [
+              "clock_forklift_1 = 0"
+            ]
+          },
+          {
+            "from": "Pick_up",
+            "to": "Idle",
+            "guard": "clock_forklift_1 >= 3",
+            "sync": "pick_up_done!",
+            "update": [
+              "v_pick_up_status = 1"
+            ]
+          },
+          {
+            "from": "Idle",
+            "to": "Move",
+            "guard": null,
+            "sync": "move_req?",
+            "update": [
+              "clock_forklift_1 = 0"
+            ]
+          },
+          {
+            "from": "Move",
+            "to": "Idle",
+            "guard": "clock_forklift_1 >= 3",
+            "sync": "move_done!",
+            "update": [
+              "v_move_status = 1"
+            ]
+          },
+          {
+            "from": "Idle",
+            "to": "Drop",
+            "guard": null,
+            "sync": "drop_req?",
+            "update": [
+              "clock_forklift_1 = 0"
+            ]
+          },
+          {
+            "from": "Drop",
+            "to": "Done",
+            "guard": "clock_forklift_1 >= 3",
+            "sync": "drop_done!",
+            "update": [
+              "v_drop_status = 1"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Uav",
+        "type": "agent",
+        "instance": "drone_1",
+        "id": "DRONE-001",
+        "attributes": {
+          "autonomyLevel": "2.0",
+          "scanRange": "1000.0"
+        },
+        "local_declarations": {
+          "clocks": [
+            "clock_drone_1"
+          ],
+          "variables": []
+        },
+        "states": [
+          {
+            "id": "Idle",
+            "name": "Idle",
+            "initial": true,
+            "invariant": null
+          },
+          {
+            "id": "Search",
+            "name": "Search",
+            "invariant": "clock_drone_1 <= 30"
+          },
+          {
+            "id": "Done",
+            "name": "Done",
+            "invariant": null
+          }
+        ],
+        "transitions": [
+          {
+            "from": "Idle",
+            "to": "Search",
+            "guard": null,
+            "sync": "search_req?",
+            "update": [
+              "clock_drone_1 = 0"
+            ]
+          },
+          {
+            "from": "Search",
+            "to": "Done",
+            "guard": "clock_drone_1 >= 3",
+            "sync": "search_done!",
+            "update": [
+              "v_search_status = 1"
+            ]
+          }
+        ]
+      }
+    ],
+    "data_flow": {
+      "parameters": {
+        "search.empty_location": {
+          "id": "search.empty_location",
+          "action": "search",
+          "parameter": "empty_location",
+          "direction": "out",
+          "type": "int",
+          "global_variable": "v_search_empty_location",
+          "produced_by": null,
+          "consumed_by": []
+        },
+        "search.status": {
+          "id": "search.status",
+          "action": "search",
+          "parameter": "status",
+          "direction": "out",
+          "type": "int",
+          "global_variable": "v_search_status",
+          "produced_by": null,
+          "consumed_by": []
+        },
+        "pick_up.object": {
+          "id": "pick_up.object",
+          "action": "pick_up",
+          "parameter": "object",
+          "direction": "in",
+          "type": "int",
+          "literal_value": "euro_pallet_1",
+          "source": "literal"
+        },
+        "pick_up.status": {
+          "id": "pick_up.status",
+          "action": "pick_up",
+          "parameter": "status",
+          "direction": "out",
+          "type": "int",
+          "global_variable": "v_pick_up_status",
+          "produced_by": null,
+          "consumed_by": []
+        },
+        "move.destination": {
+          "id": "move.destination",
+          "action": "move",
+          "parameter": "destination",
+          "direction": "in",
+          "type": "int",
+          "global_variable": "v_search_empty_location",
+          "source": "search.empty_location"
+        },
+        "move.status": {
+          "id": "move.status",
+          "action": "move",
+          "parameter": "status",
+          "direction": "out",
+          "type": "int",
+          "global_variable": "v_move_status",
+          "produced_by": null,
+          "consumed_by": []
+        },
+        "drop.object": {
+          "id": "drop.object",
+          "action": "drop",
+          "parameter": "object",
+          "direction": "in",
+          "type": "int",
+          "literal_value": "euro_pallet_1",
+          "source": "literal"
+        },
+        "drop.status": {
+          "id": "drop.status",
+          "action": "drop",
+          "parameter": "status",
+          "direction": "out",
+          "type": "int",
+          "global_variable": "v_drop_status",
+          "produced_by": null,
+          "consumed_by": []
+        }
+      },
+      "dependencies": [
+        {
+          "from": "search.empty_location",
+          "to": "move.destination",
+          "variable": "v_search_empty_location",
+          "type": "output_to_input"
+        }
+      ]
+    },
+    "system": {
+      "instances": [
+        {
+          "template": "Controller",
+          "name": "controller"
+        },
+        {
+          "template": "Forklift",
+          "name": "forklift_1"
+        },
+        {
+          "template": "Uav",
+          "name": "drone_1"
+        }
+      ]
+    }
+  }
+}

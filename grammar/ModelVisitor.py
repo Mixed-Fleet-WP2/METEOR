@@ -14,6 +14,21 @@ class ModelVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by Model#packageDecl.
+    def visitPackageDecl(self, ctx:Model.PackageDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by Model#importDecl.
+    def visitImportDecl(self, ctx:Model.ImportDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by Model#qualifiedName.
+    def visitQualifiedName(self, ctx:Model.QualifiedNameContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by Model#action.
     def visitAction(self, ctx:Model.ActionContext):
         return self.visitChildren(ctx)
@@ -46,6 +61,31 @@ class ModelVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by Model#thenStep.
     def visitThenStep(self, ctx:Model.ThenStepContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by Model#ifStatement.
+    def visitIfStatement(self, ctx:Model.IfStatementContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by Model#flowBody.
+    def visitFlowBody(self, ctx:Model.FlowBodyContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by Model#condition.
+    def visitCondition(self, ctx:Model.ConditionContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by Model#comparison.
+    def visitComparison(self, ctx:Model.ComparisonContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by Model#compareOp.
+    def visitCompareOp(self, ctx:Model.CompareOpContext):
         return self.visitChildren(ctx)
 
 

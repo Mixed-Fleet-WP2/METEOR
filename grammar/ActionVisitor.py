@@ -44,6 +44,31 @@ class ActionVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by Action#ifStatement.
+    def visitIfStatement(self, ctx:Action.IfStatementContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by Action#flowBody.
+    def visitFlowBody(self, ctx:Action.FlowBodyContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by Action#condition.
+    def visitCondition(self, ctx:Action.ConditionContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by Action#comparison.
+    def visitComparison(self, ctx:Action.ComparisonContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by Action#compareOp.
+    def visitCompareOp(self, ctx:Action.CompareOpContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by Action#expr.
     def visitExpr(self, ctx:Action.ExprContext):
         return self.visitChildren(ctx)
